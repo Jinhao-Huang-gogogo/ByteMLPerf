@@ -99,6 +99,7 @@ class DataLoader(data_loader.Dataset):
         self.model = model
         self.cur_bs = 1
         self.batch_num = int(self.items / self.cur_bs)
+        self.type =self.config['input_type'].split(",")
 
         # save mask name to help setting the the results at unmasked positions to zero
         if "roberta" in self.model or "torch" in self.model:
@@ -147,8 +148,8 @@ class DataLoader(data_loader.Dataset):
                         self.eval_features[j].input_mask)
                     features['segment_ids:0'].append(
                         self.eval_features[j].segment_ids)
-            for key in features.keys():
-                features[key] = np.array(features[key])
+            for i,key in enumerate(features.keys()):
+                features[key] = np.array(features[key]).astype(INPUT_TYPE[self.type[i]])
             self.batched_data.append(features)
 
     def get_samples(self, sample_id):
